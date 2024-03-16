@@ -26,6 +26,17 @@
                    :value="item">
         </el-option>
       </el-select>
+      <el-select clearable
+                 style="width: 200px"
+                 class="filter-item"
+                 v-model="listQuery.usertype"
+                 placeholder="用户身份">
+        <el-option v-for="(item, index) in usertypes"
+                   :key="index"
+                   :label="item.label"
+                   :value="item.value">
+        </el-option>
+      </el-select>
 
       <!--动作按钮-->
       <el-button class="filter-item" type="primary" v-waves icon="el-icon-search" @click="handleFilter">
@@ -49,21 +60,33 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="150px" align="center" label="用户名">
+      <el-table-column width="120px" align="center" label="用户名">
         <template slot-scope="scope">
           <span>{{scope.row.username}}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="150px" align="center" label="用户姓名">
+      <el-table-column width="120px" align="center" label="用户姓名">
         <template slot-scope="scope">
           <span>{{scope.row.name}}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="手机号">
+      <el-table-column width="110px" align="center" label="手机号">
         <template slot-scope="scope">
           <span>{{scope.row.mobile}}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="120px" align="center" label="用户身份">
+        <template slot-scope="scope">
+          <span>{{scope.row.usertype == 0 ? '其他': '医护人员' }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="120px" align="center" label="用户身份附件">
+        <template slot-scope="scope">
+          <span>{{scope.row.attach}}</span>
         </template>
       </el-table-column>
 
@@ -97,10 +120,13 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="操作" width="200">
+      <el-table-column align="center" label="操作" width="250">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row.id)">
             修改
+          </el-button>
+          <el-button type="primary" size="mini" @click="handleAuth(scope.row.id)">
+            应用授权
           </el-button>
           <el-button type="danger" size="mini" @click="deleteData(scope.row.id)">
             删除
@@ -151,7 +177,25 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="用户类型" prop="usertype">
+          <el-select v-model="temp.usertype" clearable
+                     style="width: 100%;" placeholder="请选择"
+                     >
+            <el-option v-for="(item, index) in usertypes"
+                       :key="index"
+                       :label="item.label"
+                       :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
 
+        <el-form-item label="用户身份附件" prop="attach">
+          <el-input :rows="3"
+                    type="textarea"
+                    v-model="temp.attach"
+                    placeholder="请输入用户身份附件">
+          </el-input>
+        </el-form-item>
         <el-form-item label="用户详情" prop="description">
           <el-input :rows="5"
                     type="textarea"
@@ -167,11 +211,35 @@
         <el-button v-if="dialogStatus=='edit'" type="primary" @click="updateData">修改</el-button>
       </div>
     </el-dialog>
+
+    <!--授权页面-->
+    <el-dialog title="应用授权" :visible.sync="authFormVisible">
+      <el-form ref="dataForm" :model="temp"
+               label-position="right"
+               label-width="120px"
+               style='width: 90%; margin-left:40px;'>
+        <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+        <div style="margin: 15px 0;"></div>
+        <el-checkbox-group v-model="temp.appIds" @change="handleCheckedChange">
+          <span v-for="(appykn) in temp.tmpApps" :key="appykn.id">
+            <el-checkbox :key="appykn.id" :label="appykn.id" style="height: 15px;margin: 20px">
+              {{appykn.appName}}
+            </el-checkbox>
+          </span>
+        </el-checkbox-group>
+      </el-form>
+      <!--对话框动作按钮-->
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="authFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="updateAuth">保存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
   import { queryUser, getUser, createUser, updateUser, deleteUser } from '@/api/organization/user'
+  import { queryAllApp, getAppByUserId } from '@/api/organization/app'
   import { getAllRoles } from '@/api/organization/role'
 
   import waves from '@/directive/waves'
@@ -196,6 +264,18 @@
         },
         // 用户状态
         userStatus: ['lock', 'deleted', 'ok'],
+        usertypes: [{
+            value: '0',
+            label: '其他'
+          },
+          {
+            value: '1',
+            label: '医护人员'
+          }],
+        apps: [],
+        isIndeterminate: true,
+        authFormVisible: false,
+        checkAll: false,
         roleList: [],
         dialogStatus: 'create',
         dialogFormVisible: false,
@@ -212,7 +292,10 @@
           ]
         },
         // 创建或修改用户临时对象
-        temp: {}
+        temp: {
+          appIds: [],
+          tmpApps: []
+        }
       }
     },
     filters: {
@@ -282,7 +365,9 @@
           password: '',
           roleIds: [],
           description: '',
-          mobile: ''
+          mobile: '',
+          appIds: [],
+          tmpApps: []
         }
       },
       /**
@@ -327,7 +412,7 @@
           this.dialogStatus = 'edit'
           this.dialogFormVisible = true
         })
-        this.$nextTick(() => {
+        this.$forceUpdate(() => {
           this.$refs['dataForm'].clearValidate()
         })
       },
@@ -383,6 +468,66 @@
        */
       handleDownload() {
         console.log('download')
+      },
+      /**
+       * 点击授权按钮
+       */
+       handleAuth(id) {
+        this.temp.id = id
+        this.temp.appIds = []
+        this.temp.tmpApps = []
+        // 查询所有资源
+        queryAllApp().then(response => {
+          this.apps = response.data
+          for (let i = 0; i < this.apps.length; i++) {
+            var newObj = { id: this.apps[i].id, appName: this.apps[i].appName }
+            this.temp.tmpApps.push(newObj)
+        }
+          this.authFormVisible = true
+        })
+        // 查询角色详细信息，拿到已授权的角色id
+        getAppByUserId(id).then(response => {
+          this.temp.appIds = response.data
+          this.handleCheckedChange(this.temp.appIds)
+        })
+      },
+      /**
+       * 全选权限选项
+       */
+       handleCheckAllChange(val) {
+        let ids = []
+        for (let i = 0; i < this.apps.length; i++) {
+          ids.push(this.apps[i].id)
+        }
+        this.temp.appIds = val ? ids : []
+        this.isIndeterminate = false
+      },
+      /**
+       * 选中选项
+       */
+      handleCheckedChange(value) {
+        let checkedCount = value.length
+        this.checkAll = checkedCount === this.apps.length
+        this.isIndeterminate = checkedCount > 0 && checkedCount < this.apps.length
+      },
+      /**
+       * 更新权限
+       */
+      updateAuth() {
+        let temp = {
+          id: this.temp.id,
+          applicationIds: this.temp.appIds
+        };
+        console.log(temp)
+        updateUser(temp).then(() => {
+          this.authFormVisible = false
+          this.$notify({
+            title: '权限编辑成功',
+            message: '权限编辑成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
       }
     }
   }

@@ -268,11 +268,13 @@
         // 查询所有资源
         queryAllResource().then(response => {
           this.resources = response.data
+          console.log(this.resources)
           this.authFormVisible = true
         })
         // 查询角色详细信息，拿到已授权的角色id
         getRole(id).then(response => {
           this.temp.resourceIds = response.data.resourceIds
+          console.log(this.temp.resourceIds)
           this.handleCheckedChange(this.temp.resourceIds)
         })
       },
@@ -294,6 +296,7 @@
         let checkedCount = value.length;
         this.checkAll = checkedCount === this.resources.length;
         this.isIndeterminate = checkedCount > 0 && checkedCount < this.resources.length;
+        console.log(this.temp.resourceIds)
       },
       /**
        * 更新权限
