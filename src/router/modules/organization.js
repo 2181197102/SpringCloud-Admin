@@ -31,6 +31,15 @@ const organizationRouter = {
       }
     },
     {
+      path: '/organization/app',
+      component: () => import('@/views/organization/app'),
+      name: 'App',
+      meta: {
+        title: '应用管理',
+        icon: 'component'
+      }
+    },
+    {
       path: '/organization/group',
       component: () => import('@/views/organization/group'),
       name: 'Group',
