@@ -45,13 +45,13 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="150px" align="center" label="应用icon">
+      <el-table-column width="150px" align="center" label="应用path">
         <template slot-scope="scope">
           <span>{{ scope.row.appIcon }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="应用描述">
+      <el-table-column width="200px" align="center" label="应用描述">
         <template slot-scope="scope">
           <span>{{ scope.row.description }}</span>
         </template>
@@ -81,8 +81,9 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="操作" width="200">
+      <el-table-column align="center" label="操作" width="250">
         <template slot-scope="scope">
+          <el-button type="primary" size="mini" @click="Jump(scope.row.appIcon)">跳转</el-button>
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row.id)">
             修改
           </el-button>
@@ -121,8 +122,8 @@
         <el-form-item label="应用名" prop="appName">
           <el-input v-model="temp.appName" placeholder="请输入应用名" />
         </el-form-item>
-        <el-form-item label="应用icon" prop="appIcon">
-          <el-input v-model="temp.appIcon" placeholder="请输入应用icon" />
+        <el-form-item label="应用path" prop="appIcon">
+          <el-input v-model="temp.appIcon" placeholder="请输入应用path" />
         </el-form-item>
         <el-form-item label="应用描述" prop="description">
           <el-input
@@ -319,6 +320,9 @@ export default {
        */
     handleDownload() {
       console.log('download')
+    },
+    Jump(path) {
+      this.$router.push(path)
     }
   }
 }

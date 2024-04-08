@@ -82,6 +82,51 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/nsclc',
+    component: () => import('@/views/application/nsclc/layout/Index.vue'),
+    hidden: true,
+    meta: { title: '创作中心' },
+    children: [
+      {
+        path: '/nsclc',
+        name: 'nsclcIndex',
+        component: () => import('@/views/application/nsclc/upload.vue'),
+        meta: {
+          title: '创作中心',
+          requireAuth: true,
+          affix: true
+        }
+      },
+      {
+        path: '/nsclc/upload',
+        name: 'Upload',
+        component: () => import('@/views/application/nsclc/upload.vue'),
+        meta: {
+          title: '投稿',
+          requireAuth: true
+        }
+      },
+      {
+        path: '/nsclc/search',
+        name: 'Search',
+        component: () => import('@/views/application/nsclc/search.vue'),
+        meta: {
+          title: '搜索',
+          requireAuth: true
+        }
+      },
+      {
+        path: '/nsclc/401',
+        name: '401',
+        component: () => import('@/views/application/nsclc/401.vue'),
+        meta: {
+          title: '401',
+          requireAuth: true
+        }
+      }
+    ]
+  },
+  {
     path: '/profile',
     component: Layout,
     redirect: '/profile/index',
