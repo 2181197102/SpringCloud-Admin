@@ -8,12 +8,13 @@ services:
       - ./nginx/logs:/var/log/nginx
       - ./nginx/conf:/etc/nginx/conf.d
       - ./dist:/usr/share/nginx/html/springcloud-admin
+      - ./show_nrrd_dist:/usr/share/nginx/html/show_nrrd_dist
     networks:
-      - sc-net
+      - docker-compose_sc-net
     ports:
-      - 8080:9090
+      - 9527:9527
+      - 9528:9528
 
 networks:
-  sc-net:
-    external:
-      name: docker-compose_sc-net
+  docker-compose_sc-net:
+    external: true

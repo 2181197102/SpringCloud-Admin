@@ -1,8 +1,8 @@
 import { validUsername, validURL, validLowerCase, validUpperCase, validAlphabets } from '@/utils/validate.js'
 describe('Utils:validate', () => {
   it('validUsername', () => {
-    expect(validUsername('admin')).toBe(true)
-    expect(validUsername('editor')).toBe(true)
+    expect(validUsername('ADMIN')).toBe(true)
+    expect(validUsername('DOC')).toBe(true)
     expect(validUsername('xxxx')).toBe(false)
   })
   it('validURL', () => {

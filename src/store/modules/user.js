@@ -1,10 +1,10 @@
 import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, getUserName, setUserName, removeUserName } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
-  name: '',
+  name: getUserName(),
   avatar: '',
   introduction: '',
   roles: []
@@ -32,10 +32,13 @@ const actions = {
   // user login
   login({ commit }, userInfo) {
     const { username, password } = userInfo
+    commit('SET_NAME', username.trim())
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
         commit('SET_TOKEN', response.access_token)
+        commit('SET_NAME', username.trim())
         setToken(response.access_token)
+        setUserName(username.trim())
         resolve()
       }).catch(error => {
         console.error(error)
@@ -47,25 +50,26 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+      getInfo(state.name).then(response => {
+        console.log(state.name)
+        console.log(response)
         const { data } = response
 
         if (!data) {
           reject('Verification failed, please Login again.')
         }
 
-        const { name, description } = data
+        const { username, description } = data
 
-        // roles must be a non-empty array
-        // if (!roleIds || roleIds.length <= 0) {
-        //   reject('getInfo: roles must be a non-null array!')
-        // }
+        console.log('返回数据name')
+        console.log(username)
 
-        commit('SET_ROLES', ['admin'])
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', 'https://avatars3.githubusercontent.com/u/3946731?s=460&v=4')
+        commit('SET_ROLES', data.roles)
+        commit('SET_NAME', username)
+        commit('SET_AVATAR', 'https://avatars.githubusercontent.com/u/92516883?v=4')
         commit('SET_INTRODUCTION', description)
-        data.roles = ['admin']
+        var roles = data.roles
+        data.roles = roles
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -80,6 +84,7 @@ const actions = {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
         removeToken()
+        removeUserName()
         resetRouter()
         resolve()
       }).catch(error => {
@@ -93,6 +98,8 @@ const actions = {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
+      commit('SET_NAME', '')
+      removeUserName()
       removeToken()
       resolve()
     })

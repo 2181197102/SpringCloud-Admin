@@ -18,18 +18,18 @@ export function login(data) {
   })
 }
 
-export function getInfo(token) {
+export function getInfo(username) {
   return request({
     url: '/organization/user',
     method: 'get',
-    params: { uniqueId: 'admin' }
+    params: { uniqueId: username }
   })
 }
 
 export function logout() {
   return Promise.resolve({
-    code: "000000",
-    mesg: "成功",
-    time: new Date(),
+    code: '000000',
+    mesg: '成功',
+    time: new Date()
   })
 }

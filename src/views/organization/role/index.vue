@@ -161,7 +161,7 @@
         <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">全选</el-checkbox>
         <div style="margin: 15px 0;" />
         <el-checkbox-group v-model="temp.resourceIds" @change="handleCheckedChange">
-          <span v-for="(resource) in resources">
+          <span v-for="(resource) in resources" :key="resource.id">
             <el-checkbox :key="resource.id" :label="resource.id" style="height: 15px;margin: 10px">
               {{ resource.name }}
             </el-checkbox>
@@ -266,6 +266,7 @@ export default {
       this.temp = {}
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
+      console.log('不發請求?')
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })

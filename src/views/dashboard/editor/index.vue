@@ -27,7 +27,7 @@ export default {
   components: { PanThumb, GithubCorner },
   data() {
     return {
-      emptyGif: 'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3'
+      emptyGif: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSXdj1smVAlREj2lxfIvwWmK1C8mvzonttEw&usqp=CAU'
     }
   },
   computed: {
