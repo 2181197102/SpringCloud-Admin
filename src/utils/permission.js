@@ -10,6 +10,8 @@ export default function checkPermission(value) {
     const roles = store.getters && store.getters.roles
     const permissionRoles = value
 
+    console.log('查看roles:')
+    console.log(roles)
     const hasPermission = roles.some(role => {
       return permissionRoles.includes(role)
     })
@@ -19,7 +21,7 @@ export default function checkPermission(value) {
     }
     return true
   } else {
-    console.error(`need roles! Like v-permission="['admin','editor']"`)
+    console.error(`need roles! Like v-permission="['ADMIN','DOC']"`)
     return false
   }
 }

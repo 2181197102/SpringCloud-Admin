@@ -13,7 +13,8 @@
 
       <el-input
         v-model="listQuery.patientName"
-        style="width: 200px;"
+        :disabled="isPatient"
+        style="width: 170px;"
         class="filter-item"
         placeholder="患者姓名"
         @keyup.enter.native="handleFilter"
@@ -21,7 +22,7 @@
 
       <el-input
         v-model="listQuery.doctorName"
-        style="width: 200px;"
+        style="width: 150px;"
         class="filter-item"
         placeholder="诊断医生姓名"
         @keyup.enter.native="handleFilter"
@@ -57,6 +58,21 @@
         />
       </el-select>
 
+      <el-select
+        v-model="listQuery.modelCode"
+        class="filter-item"
+        placeholder="请选择模型"
+        style="width: 120px"
+        clearable
+      >
+        <el-option
+          v-for="item in models"
+          :key="item.modelCode"
+          :label="item.modelName"
+          :value="item.modelCode"
+        />
+      </el-select>
+
       <!--动作按钮-->
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -81,6 +97,12 @@
       <el-table-column width="100px" align="center" label="诊断医生">
         <template slot-scope="scope">
           <span>{{ scope.row.doctorName }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="100px" align="center" label="评估模型">
+        <template slot-scope="scope">
+          <span>{{ scope.row.modelName }}</span>
         </template>
       </el-table-column>
 
@@ -195,6 +217,9 @@
         <el-form-item label="诊断医生姓名" prop="doctorName">
           <el-input v-model="temp.doctorName" placeholder="请输入诊断医生姓名" />
         </el-form-item>
+        <el-form-item label="评估模型" prop="modelName">
+          <el-input v-model="temp.modelName" placeholder="请输入诊断医生姓名" readonly />
+        </el-form-item>
         <el-form-item width="120px" label="自动评估结果" prop="sysDiagResult">
           <template>
             <el-select
@@ -248,7 +273,9 @@
 </template>
 
 <script>
-import { queryNsclc, getNsclc, updateNsclc, deleteNsclc } from '@/api/application/nsclc'
+import { queryNsclc, getNsclc, updateNsclc, deleteNsclc, queryAllModel } from '@/api/application/nsclc'
+
+import store from '@/store'
 
 import waves from '@/directive/waves'
 
@@ -271,6 +298,7 @@ export default {
         diagnosisCode: '',
         patientName: '',
         doctorName: '',
+        modelCode: '',
         sysDiagResult: -1,
         docDiagResult: -1,
         current: 1,
@@ -289,19 +317,26 @@ export default {
           { required: true, message: '应用名必填', trigger: 'blur' }
         ]
       },
-      // 创建或修改应用临时对象
-      temp: {}
+      // 创建或修改临时对象
+      temp: {},
+      models: [],
+      isPatient: false
     }
   },
   // 页面加载完成后显示列表页
   created() {
+    this.init()
     this.queryDiag()
     this.resetForm()
+    this.loadAllModels()
   },
   methods: {
-    /**
-       * 应用列表
-       */
+    init() {
+      this.isPatient = store.getters.roles[0] === 'PAT'
+      if (this.isPatient) {
+        this.listQuery.patientName = store.getters.name + ' 仅可查看自己'
+      }
+    },
     queryDiag() {
       this.listLoading = true
       queryNsclc(this.listQuery).then(response => {
@@ -309,8 +344,6 @@ export default {
         this.total = response.data.total
         this.listLoading = false
       }).catch(response => {
-        console.log('kjveli!!!')
-        console.log(response)
         this.$router.push('/nsclc/401')
       })
     },
@@ -345,9 +378,6 @@ export default {
         docDiagResult: -1
       }
     },
-    /**
-       * 弹出修改应用表单
-       */
     handleUpdate(diagnosisCode) {
       this.listLoading = true
       getNsclc(diagnosisCode).then(response => {
@@ -360,9 +390,6 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    /**
-       * 修改应用信息
-       */
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
@@ -380,11 +407,14 @@ export default {
         }
       })
     },
-    /**
-       * 删除应用
-       */
+    loadAllModels() {
+      queryAllModel().then(response => {
+        this.models = response.data
+        console.log(this.models)
+      })
+    },
     deleteData(diagnosisCode) {
-      this.$confirm('此操作将删除该应用, 是否继续?', '提示', {
+      this.$confirm('此操作将删除该诊断信息, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         center: true,

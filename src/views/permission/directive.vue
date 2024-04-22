@@ -3,33 +3,33 @@
     <switch-roles @change="handleRolesChange" />
     <div :key="key" style="margin-top:30px;">
       <div>
-        <span v-permission="['admin']" class="permission-alert">
+        <span v-permission="['ADMIN']" class="permission-alert">
           Only
-          <el-tag class="permission-tag" size="small">admin</el-tag> can see this
+          <el-tag class="permission-tag" size="small">ADMIN</el-tag> can see this
         </span>
-        <el-tag v-permission="['admin']" class="permission-sourceCode" type="info">
-          v-permission="['admin']"
+        <el-tag v-permission="['ADMIN']" class="permission-sourceCode" type="info">
+          v-permission="['ADMIN']"
         </el-tag>
       </div>
 
       <div>
-        <span v-permission="['editor']" class="permission-alert">
+        <span v-permission="['DOC']" class="permission-alert">
           Only
-          <el-tag class="permission-tag" size="small">editor</el-tag> can see this
+          <el-tag class="permission-tag" size="small">DOC</el-tag> can see this
         </span>
-        <el-tag v-permission="['editor']" class="permission-sourceCode" type="info">
-          v-permission="['editor']"
+        <el-tag v-permission="['DOC']" class="permission-sourceCode" type="info">
+          v-permission="['DOC']"
         </el-tag>
       </div>
 
       <div>
-        <span v-permission="['admin','editor']" class="permission-alert">
+        <span v-permission="['ADMIN','DOC']" class="permission-alert">
           Both
-          <el-tag class="permission-tag" size="small">admin</el-tag> and
-          <el-tag class="permission-tag" size="small">editor</el-tag> can see this
+          <el-tag class="permission-tag" size="small">ADMIN</el-tag> and
+          <el-tag class="permission-tag" size="small">DOC</el-tag> can see this
         </span>
-        <el-tag v-permission="['admin','editor']" class="permission-sourceCode" type="info">
-          v-permission="['admin','editor']"
+        <el-tag v-permission="['ADMIN','DOC']" class="permission-sourceCode" type="info">
+          v-permission="['ADMIN','DOC']"
         </el-tag>
       </div>
     </div>
@@ -41,24 +41,24 @@
       </aside>
 
       <el-tabs type="border-card" style="width:550px;">
-        <el-tab-pane v-if="checkPermission(['admin'])" label="Admin">
+        <el-tab-pane v-if="checkPermission(['ADMIN'])" label="ADMIN">
           Admin can see this
           <el-tag class="permission-sourceCode" type="info">
-            v-if="checkPermission(['admin'])"
+            v-if="checkPermission(['ADMIN'])"
           </el-tag>
         </el-tab-pane>
 
-        <el-tab-pane v-if="checkPermission(['editor'])" label="Editor">
-          Editor can see this
+        <el-tab-pane v-if="checkPermission(['DOC'])" label="DOC">
+          DOC can see this
           <el-tag class="permission-sourceCode" type="info">
-            v-if="checkPermission(['editor'])"
+            v-if="checkPermission(['DOC'])"
           </el-tag>
         </el-tab-pane>
 
-        <el-tab-pane v-if="checkPermission(['admin','editor'])" label="Admin-OR-Editor">
-          Both admin or editor can see this
+        <el-tab-pane v-if="checkPermission(['ADMIN','DOC'])" label="Admin-OR-DOC">
+          Both ADMIN or DOC can see this
           <el-tag class="permission-sourceCode" type="info">
-            v-if="checkPermission(['admin','editor'])"
+            v-if="checkPermission(['ADMIN','DOC'])"
           </el-tag>
         </el-tab-pane>
       </el-tabs>

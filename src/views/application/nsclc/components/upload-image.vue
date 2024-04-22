@@ -9,7 +9,7 @@
             </el-col>
           </el-row>
           <el-row type="flex" justify="center" align="middle" style="padding-top: 12px;">
-            <el-col class="title" type="flex" justify="center" align="middle">
+            <el-col style="width: 30%" class="title" type="flex" justify="center" align="middle">
               <el-upload
                 ref="upload"
                 class="upload-demo"
@@ -24,7 +24,12 @@
                 <el-button slot="trigger" size="small" type="primary">上传文件</el-button>
               </el-upload>
             </el-col>
+            <el-col style="width: 30%" class="title" type="flex" justify="center" align="middle">
+              <el-button :disabled="showNrrdBtn" size="small" type="primary" @click="shownrrd">查看影像</el-button>
+            </el-col>
           </el-row>
+          <el-divider />
+
           <el-row type="flex" justify="center" align="middle" style="padding-top: 12px;">
             <el-col class="title" type="flex" justify="center" align="middle">
               <h2>上传掩膜图像</h2>
@@ -55,22 +60,36 @@
           <el-col />
 
           <el-row type="flex" justify="center" align="middle">
-            <el-col :span="20">
-              <el-button class="el-button1" size="large" type="primary" @click="startPredict">
-                点击上传数据开始预测
+            <el-col :span="20" style="width: 30%">
+              <el-select
+                v-model="diagnosis.modelCode"
+                placeholder="请选择模型"
+                clearable
+              >
+                <el-option
+                  v-for="item in models"
+                  :key="item.modelCode"
+                  :label="item.modelName"
+                  :value="item.modelCode"
+                />
+              </el-select>
+            </el-col>
+            <el-col :span="20" style="width: 30%">
+              <el-button v-show="diagnosis.modelCode !== ''" class="el-button1" size="large" type="primary" @click="startPredict">
+                点击开始预测
               </el-button>
             </el-col>
           </el-row>
           <el-row justify="center" />
           <el-divider />
           <el-divider />
-          <el-row justify="center">
-            <el-col class="title" type="flex" justify="center" align="middle">
-              <h2>诊断信息</h2>
-            </el-col>
-          </el-row>
 
-          <div id="pre_info" type="flex" justify="center" align="middle">
+          <div v-show="showDetails" id="pre_info" type="flex" justify="center" align="middle">
+            <el-row justify="center">
+              <el-col class="title" type="flex" justify="center" align="middle">
+                <h2>诊断信息</h2>
+              </el-col>
+            </el-row>
             <el-row justify="center" type="flex" align="middle">
               <el-col style="width: 10%">
                 <a>
@@ -160,8 +179,8 @@
       <el-dialog type="primary" :visible="showMessage" title="诊断信息" centered @close="showMessage=false">
         <p>{{ message }}</p>
         <div slot="footer" class="dialog-footer" style="bottom: 70px">
-          <el-button @click="showMessage=false">取 消</el-button>
-          <el-button type="primary" @click="showMessage=false">确 定</el-button>
+          <el-button :disabled="cancleClick" @click="showMessage=false">取 消</el-button>
+          <el-button :disabled="okClick" type="primary" @click="showMessage=false">确 定</el-button>
         </div>
       </el-dialog>
 
@@ -169,8 +188,11 @@
   </div>
 </template>
 <script>
+
 import store from '@/store'
-import { saveDiag, predict, uploadFileImage, uploadFileMask } from '@/api/application/nsclc'
+
+import { saveDiag, predict, uploadFileImage, uploadFileMask, queryAllModel } from '@/api/application/nsclc'
+
 export default {
 
   name: 'Uploadvideo',
@@ -179,16 +201,19 @@ export default {
       rules: [
         value => !value || value.size < 20000000 || 'Avatar size should be less than 20MB'
       ],
+      showDetails: true,
       diagnosis: {
         diagnosisCode: '',
         sysDiagResult: '空',
         docDiagResult: '空',
         imageFileLoc: '',
         maskFileLoc: '',
+        modelCode: '',
         diagDetails: '',
         patientName: '',
         featuresXlsxLoc: ''
       },
+      models: [],
       temp: {},
       resultMap: {
         Set: function(key, value) {
@@ -202,6 +227,8 @@ export default {
       sysDiagResult: -1,
       showMessage: false,
       message: '',
+      cancleClick: false,
+      okClick: false,
       dataForm: {},
       fileDataImage: [],
       fileDataMask: [],
@@ -213,18 +240,20 @@ export default {
       flag: {
         image: false,
         mask: false
-      }
+      },
+      showNrrdBtn: true
     }
   },
   created() {
-    console.log(store.getters && store.getters.roles)
+    this.showDetails = store.getters.roles[0] !== 'PAT'
     this.init()
     this.initResult()
+    this.loadAllModels()
   },
   methods: {
     init() {
       this.diagnosis = {
-        diagnosisCode: '', sysDiagResult: '空', docDiagResult: '空', imageFileLoc: '', maskFileLoc: '',
+        diagnosisCode: '', sysDiagResult: '空', docDiagResult: '空', imageFileLoc: '', maskFileLoc: '', modelCode: '',
         diagDetails: '', patientName: '', featuresXlsxLoc: '', doctorName: ''
       }
       this.docDiagResult = -1
@@ -234,6 +263,9 @@ export default {
       this.flag.mask = false
       this.fileDataImage = []
       this.fileDataMask = []
+      this.cancleClick = false
+      this.okClick = false
+      this.showNrrdBtn = true
     },
     initResult() {
       this.resultMap.Set(-1, '空')
@@ -241,18 +273,34 @@ export default {
       this.resultMap.Set(1, '有疗效')
     },
     startPredict() {
+      this.showMessage = true
+      this.message = '正在评估中，请稍等……'
+      this.cancleClick = true
+      this.okClick = true
       const predictParam = new FormData()
       predictParam.append('imageFileLoc', this.diagnosis.imageFileLoc)
       predictParam.append('maskFileLoc', this.diagnosis.maskFileLoc)
       predictParam.append('diagnosisCode', this.temp.diagnosisCode)
+      predictParam.append('modelCode', this.diagnosis.modelCode)
       predict(predictParam).then(response => {
         this.diagnosis.diagnosisCode = response.data.diagnosisCode
         this.diagnosis.sysDiagResult = response.data.sysDiagResult
         this.diagnosis.featuresXlsxLoc = response.data.featuresXlsxLoc
-        this.message = '评估结果为：' + this.resultMap.Get(this.diagnosis.sysDiagResult) + '，请继续输入其他信息并保存'
+        this.message = '评估结果为：' + this.resultMap.Get(this.diagnosis.sysDiagResult)
+        if (this.showDetails) {
+          this.message += '，请继续输入其他信息并保存'
+        }
         this.showMessage = true
+        this.cancleClick = false
+        this.okClick = false
       })
       console.log('开始预测')
+    },
+    loadAllModels() {
+      queryAllModel().then(response => {
+        this.models = response.data
+        console.log(this.models)
+      })
     },
     publish() {
       this.fileDataImage = []
@@ -314,8 +362,6 @@ export default {
         this.diagnosis.maskFileLoc = response.data.maskFileLoc
         console.log('上传图片成功')
         param.onSuccess()
-        // 上传成功的图片会显示绿色的对勾
-        // 但是我们上传成功了图片， fileList 里面的值却没有改变，还好有on-change指令可以使用
       }).catch(response => {
         console.log('图片上传失败')
         param.onError()
@@ -324,18 +370,28 @@ export default {
     UploadImage(param) {
       const uploadImageParam = new FormData()
       uploadImageParam.append('file', param.file)
+      this.showMessage = true
+      this.message = '正在上传中，由于文件较大，请稍候'
+      this.cancleClick = true
+      this.okClick = true
       uploadFileImage(uploadImageParam).then(response => {
         this.flagImage()
         console.log(response)
         this.temp.diagnosisCode = response.data.diagnosisCode
         this.diagnosis.diagnosisCode = response.data.diagnosisCode
         this.diagnosis.imageFileLoc = response.data.imageFileLoc
-        console.log(this.diagnosis)
+        this.showMessage = false
+        this.message = ''
+        this.cancleClick = false
+        this.okClick = false
+        this.showNrrdBtn = false
         param.onSuccess()
-        // 上传成功的图片会显示绿色的对勾
-        // 但是我们上传成功了图片， fileList 里面的值却没有改变，还好有on-change指令可以使用
       }).catch(response => {
         console.log('图片上传失败')
+        this.showMessage = false
+        this.message = ''
+        this.cancleClick = false
+        this.okClick = false
         param.onError()
       })
     },
@@ -350,14 +406,9 @@ export default {
         this.flag.mask = false
         this.diagnosis.maskFileLoc = ''
       }
-      // const resultArr = this.fileData.filter((item) => {
-      //   return item.url === file.url
-      // })
-      // console.log(resultArr[0])
-      // this.dataForm.id = resultArr[0].id
-      // this.$nextTick(() => {
-      //   this.deleteHandle(this.dataForm.id)
-      // })
+    },
+    shownrrd() {
+      window.open('http://' + location.host.split(':')[0] + ':9528/#/shownrrd/' + this.diagnosis.diagnosisCode, '_blank')
     },
     // 点击文件列表中已上传的文件时的钩子
     handlePreview(file) {

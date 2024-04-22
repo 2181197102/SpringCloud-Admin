@@ -82,6 +82,12 @@ springcloud-admin是以[vue-element-admin](http://panjiachen.github.io/vue-eleme
 - Markdown2html
 ```
 
+## 脚本部署docker
+```bash
+chmod +x install.sh
+
+./install.sh
+```
 ## 开发
 ```bash
 # 前置环境

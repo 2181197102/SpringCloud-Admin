@@ -69,16 +69,55 @@ export function queryAllNsclc() {
   })
 }
 
-export function getAppByDrName(drName) {
+export function uploadModel(data) {
   return request({
-    url: '/app/nsclc/drname/' + drName,
+    url: '/app/nsclc/model/file/upload/model',
+    method: 'post',
+    data
+  })
+}
+
+export function saveModelInfo(data) {
+  return request({
+    url: '/app/nsclc/model/save',
+    method: 'post',
+    data
+  })
+}
+
+export function queryModel(data) {
+  return request({
+    url: '/app/nsclc/model/conditions',
+    method: 'post',
+    data
+  })
+}
+
+export function getModel(modelCode) {
+  return request({
+    url: '/app/nsclc/model/' + modelCode,
     method: 'get'
   })
 }
 
-export function getAppByPatientName(ptname) {
+export function updateModel(data) {
   return request({
-    url: '/app/nsclc/ptname/' + ptname,
+    url: '/app/nsclc/model/' + data.modelCode,
+    method: 'put',
+    data
+  })
+}
+
+export function deleteModel(modelCode) {
+  return request({
+    url: '/app/nsclc/model/' + modelCode,
+    method: 'delete'
+  })
+}
+
+export function queryAllModel() {
+  return request({
+    url: '/app/nsclc/model/all',
     method: 'get'
   })
 }

@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import VideoUpload from './components/upload-video.vue'
+import VideoUpload from './components/upload-image.vue'
 
 export default {
   name: 'Upload',

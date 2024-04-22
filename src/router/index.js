@@ -85,14 +85,14 @@ export const constantRoutes = [
     path: '/nsclc',
     component: () => import('@/views/application/nsclc/layout/Index.vue'),
     hidden: true,
-    meta: { title: '创作中心' },
+    meta: { title: 'nsclc疗效评估' },
     children: [
       {
         path: '/nsclc',
         name: 'nsclcIndex',
         component: () => import('@/views/application/nsclc/upload.vue'),
         meta: {
-          title: '创作中心',
+          title: 'NSCLC疗效评估',
           requireAuth: true,
           affix: true
         }
@@ -102,7 +102,7 @@ export const constantRoutes = [
         name: 'Upload',
         component: () => import('@/views/application/nsclc/upload.vue'),
         meta: {
-          title: '投稿',
+          title: 'NSCLC疗效评估',
           requireAuth: true
         }
       },
@@ -120,7 +120,16 @@ export const constantRoutes = [
         name: '401',
         component: () => import('@/views/application/nsclc/401.vue'),
         meta: {
-          title: '401',
+          title: '401'
+        }
+      },
+      {
+        path: '/nsclc/model',
+        name: 'model',
+        component: () => import('@/views/application/nsclc/model.vue'),
+        meta: {
+          title: '模型',
+
           requireAuth: true
         }
       }

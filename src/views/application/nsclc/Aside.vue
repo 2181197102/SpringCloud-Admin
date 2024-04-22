@@ -9,6 +9,7 @@
     >
       <el-menu-item index="/nsclc/upload"><i class="el-icon-location" />疗效评估</el-menu-item>
       <el-menu-item index="/nsclc/search"><i class="el-icon-document" />评估历史查询</el-menu-item>
+      <el-menu-item index="/nsclc/model"><i class="el-icon-document" />模型管理</el-menu-item>
     </el-menu>
   </div>
 </template>

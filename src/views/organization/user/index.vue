@@ -31,12 +31,12 @@
           :value="item"
         />
       </el-select>
-      <el-select
+      <!-- <el-select
         v-model="listQuery.usertype"
         clearable
         style="width: 200px"
         class="filter-item"
-        placeholder="用户身份"
+        placeholder="用户角色"
       >
         <el-option
           v-for="(item, index) in usertypes"
@@ -44,7 +44,7 @@
           :label="item.label"
           :value="item.value"
         />
-      </el-select>
+      </el-select> -->
 
       <!--动作按钮-->
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
@@ -92,11 +92,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="用户身份">
+      <!-- <el-table-column width="120px" align="center" label="用户身份">
         <template slot-scope="scope">
           <span>{{ scope.row.usertype == 0 ? '其他': '医护人员' }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
 
       <el-table-column width="120px" align="center" label="用户身份附件">
         <template slot-scope="scope">
@@ -192,22 +192,20 @@
         </el-form-item>
         <el-form-item label="角色" prop="roles">
           <el-select
-            v-model="temp.roleIds"
-            multiple
+            v-model="temp.roleIds[0]"
             clearable
             style="width: 100%;"
             placeholder="请选择"
-            @visible-change="getRoles"
           >
             <el-option
               v-for="item in roleList"
-              :key="item.code"
+              :key="item.id"
               :label="item.name"
               :value="item.id"
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="用户类型" prop="usertype">
+        <!-- <el-form-item label="用户类型" prop="usertype">
           <el-select
             v-model="temp.usertype"
             clearable
@@ -221,7 +219,7 @@
               :value="item.value"
             />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
 
         <el-form-item label="用户身份附件" prop="attach">
           <el-input
@@ -314,14 +312,14 @@ export default {
       },
       // 用户状态
       userStatus: ['lock', 'deleted', 'ok'],
-      usertypes: [{
-        value: '0',
-        label: '其他'
-      },
-      {
-        value: '1',
-        label: '医护人员'
-      }],
+      // usertypes: [{
+      //   value: '0',
+      //   label: '其他'
+      // },
+      // {
+      //   value: '1',
+      //   label: '医护人员'
+      // }],
       apps: [],
       isIndeterminate: true,
       authFormVisible: false,
@@ -352,6 +350,7 @@ export default {
   created() {
     this.queryUser()
     this.resetForm()
+    this.getRoles(true)
   },
   methods: {
     /**
