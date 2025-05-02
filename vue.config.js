@@ -37,18 +37,19 @@ module.exports = {
       errors: true
     },
     proxy: {
-      // change xxx-api/login => mock/login
-      // detail: https://cli.vuejs.org/config/#devserver-proxy
+      // 将前端的 API 请求代理到后端服务器
       [process.env.VUE_APP_BASE_API]: {
-        target: `http://centos:8443`,
-        changeOrigin: true,
+        target: `http://centos:8443`, // 替换为你的后端服务地址
+        changeOrigin: true, // 确保代理时请求头中的主机名会被设置为目标地址
         pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_API]: ''
+          ['^' + process.env.VUE_APP_BASE_API]: '' // 去掉前缀
         }
       }
-    },
-    after: require('./mock/mock-server.js')
+    }
+    // 取消 mock 服务器
+    // after: require('./mock/mock-server.js')
   },
+
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
