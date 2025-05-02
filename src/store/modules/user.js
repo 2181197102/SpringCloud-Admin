@@ -66,7 +66,7 @@ const actions = {
 
         commit('SET_ROLES', data.roles)
         commit('SET_NAME', username)
-        commit('SET_AVATAR', 'https://avatars.githubusercontent.com/u/92516883?v=4')
+        commit('SET_AVATAR', 'https://avatars.githubusercontent.com/u/128360566?v=4&size=64')
         commit('SET_INTRODUCTION', description)
         var roles = data.roles
         data.roles = roles
@@ -107,6 +107,7 @@ const actions = {
 
   // dynamically modify permissions
   changeRoles({ commit, dispatch }, role) {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async resolve => {
       const token = role + '-token'
 
