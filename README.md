@@ -97,6 +97,7 @@ npm 10.2.3
 
 # 前置域名服务
 # 在hosts文件中添加后端ip->centos的域名解析
+# windows C:\Windows\System32\drivers\etc 在hosts文件中添加"ip centos"
 
 # 安装依赖
 npm install --legacy-peer-deps --registry=https://registry.npmmirror.com
@@ -133,3 +134,44 @@ npm run lint
 # auto fix
 npm run lint -- --fix
 ```
+
+SpringCloud-Admin/
+├── .github/
+│   └── workflows/                # GitHub Actions 的 CI/CD 配置文件
+├── build/                        # 构建相关的脚本和配置（构建流程、打包优化等）
+├── mock/                         # 模拟数据文件，利用 Mock.js 模拟 API 接口返回数据
+├── nginx/
+│   └── conf/                     # Nginx 服务器配置文件，用于反向代理、负载均衡等部署设置
+├── plop-templates/               # Plop 代码生成器的模板文件，用于快速生成组件、页面等代码
+├── public/                       # 静态资源目录，包含入口 HTML、favicon 等不经过 webpack 处理的资源
+├── show_nrrd_dist/               # 特殊目录，可能用于存放构建输出、分发文件或演示页面（具体作用可查看内部内容）
+├── src/                          # 项目核心源代码目录
+│   ├── assets/                   # 图片、字体、样式文件等静态资源，用于项目中引用
+│   ├── components/               # 可复用的 Vue 组件（如通用组件、业务组件等）
+│   ├── router/                   # 路由配置文件，定义页面路由和权限校验（基于 vue-router）
+│   ├── store/                    # Vuex 状态管理相关代码，用于全局数据的存储与管理
+│   ├── views/                    # 页面级组件，每个视图对应一个具体页面（路由映射的组件）
+│   ├── utils/                    # 工具函数库，包括 API 请求封装（如 axios 封装）、公共方法等
+│   └── main.js                   # 应用入口文件，初始化 Vue 实例、挂载路由、引入全局插件和样式
+├── tests/
+│   └── unit/                     # 单元测试代码，通常基于 Jest 对组件和业务逻辑进行测试
+├── .editorconfig                 # 编辑器配置文件，统一各开发工具的代码风格（缩进、换行等）
+├── .env.development              # 开发环境环境变量配置（如 API 地址、调试模式开关等）
+├── .env.production               # 生产环境环境变量配置
+├── .env.staging                  # 预发布/测试环境环境变量配置
+├── .eslintignore                 # ESLint 检查时忽略的文件或目录列表
+├── .eslintrc.js                  # ESLint 配置文件，定义代码风格检查规则
+├── .gitignore                    # Git 忽略文件列表（如 node_modules、日志等不需提交的文件）
+├── .npmignore                    # 发布 npm 包时需要忽略的文件列表（通常与 .gitignore 类似）
+├── .travis.yml                   # Travis CI 持续集成配置文件（自动化构建和测试）
+├── LICENSE                       # 项目开源协议文件（MIT 许可证）
+├── README.md                     # 项目说明文档，包含项目简介、安装、开发、部署说明等
+├── babel.config.js               # Babel 转码配置文件，用于将 ES6+ 代码转换成兼容性更好的代码
+├── docker-compose.yml            # Docker Compose 配置文件，定义多容器部署方案（便于容器化部署）
+├── install.sh                    # 安装脚本，可用于一键安装依赖或环境配置（记得赋予执行权限）
+├── jest.config.js                # Jest 测试框架的配置文件，配置单元测试运行环境和规则
+├── package.json                  # npm 配置文件，声明依赖、脚本命令、项目信息等
+├── plopfile.js                   # Plop 代码生成器的配置文件，定义代码模板生成规则和逻辑
+├── postcss.config.js             # PostCSS 配置文件，用于 CSS 处理（如自动添加前缀、兼容性处理等）
+└── vue.config.js                 # Vue CLI 配置文件，可用于自定义 webpack 配置、代理设置等
+

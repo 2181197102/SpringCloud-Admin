@@ -25,11 +25,11 @@ export default {
   name: 'Layout',
   components: {
     AppMain,
-    Navbar,
-    RightPanel,
-    Settings,
-    Sidebar,
-    TagsView
+    Navbar, // 顶部导航栏
+    RightPanel, // 右侧设置面板
+    Settings, // 右侧设置面板
+    Sidebar, // 左侧菜单
+    TagsView // 可选的标签页
   },
   mixins: [ResizeMixin],
   computed: {

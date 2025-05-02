@@ -39,15 +39,16 @@ const organizationRouter = {
         icon: 'component'
       }
     },
+    // {
+    //   path: '/organization/group',
+    //   component: () => import('@/views/organization/group'),
+    //   name: 'Group',
+    //   meta: {
+    //     title: '组织架构',
+    //     icon: 'group'
+    //   }
+    // },
     {
-      path: '/organization/group',
-      component: () => import('@/views/organization/group'),
-      name: 'Group',
-      meta: {
-        title: '组织架构',
-        icon: 'group'
-      }
-    }, {
       path: '/organization/gateway',
       component: () => import('@/views/organization/gateway'),
       name: 'Gateway',
