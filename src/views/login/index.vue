@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">甲病辅助咨询系统 管理后台登录</h3>
       </div>
 
       <el-form-item prop="username">
@@ -50,7 +50,7 @@
       <div style="position:relative">
         <div class="tips">
           <span>Username : admin</span>
-          <span>Password : password</span>
+          <span>Password : 123456</span>
         </div>
 
         <el-button class="thirdparty-button" type="primary" @click="showDialog=true">

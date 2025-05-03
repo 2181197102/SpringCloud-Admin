@@ -10,6 +10,7 @@ import Layout from '@/layout'
 /* 引入路由模块：组织架构和 DevOps 功能 */
 import organizationRouter from './modules/organization'
 import devopsRouter from './modules/deops'
+import nailRouter from './modules/nail'
 
 /**
  * 路由配置说明：
@@ -150,6 +151,7 @@ export const asyncRoutes = [
   // 按模块拆分的大型路由表
   organizationRouter,
   devopsRouter,
+  nailRouter,
   // 外部链接示例：跳转到 GitHub
   {
     path: '/github',
